@@ -1,0 +1,31 @@
+version: '3.3'
+services:
+  backend:
+    build:
+        context: backend
+        dockerfile: Dockerfile
+    restart: always
+    container_name: backend
+    user: "${UID}:${GID}"
+    command: flask run
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: /backend
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_CONFIG: local
+      SQLALCHEMY_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
+      SQLALCHEMY_TEST_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
+
+  postgresql:
+    image: postgres:11.2
+    user: "${UID}:${GID}"
+    environment:
+      POSTGRES_USER: tester
+      POSTGRES_PASSWORD: complicatedpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker_data/postgresql:/var/lib/postgresql/data
