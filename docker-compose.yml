@@ -12,10 +12,13 @@ services:
       - ./backend:/backend
     ports:
       - "5000:5000"
+    env_file:
+        - ./backend/config.env
     environment:
-      FLASK_APP: /backend
+      FLASK_APP: /backend/app.py
       FLASK_RUN_HOST: 0.0.0.0
       FLASK_CONFIG: local
+      FLASK_ENV: development
       SQLALCHEMY_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
       SQLALCHEMY_TEST_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
 
@@ -29,3 +32,14 @@ services:
       - "5432:5432"
     volumes:
       - ./docker_data/postgresql:/var/lib/postgresql/data
+
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - './frontend:/frontend'
+      - '/frontend/node_modules'
+    ports:
+      - '8081:8080'
