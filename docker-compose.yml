@@ -25,6 +25,7 @@ services:
   postgresql:
     image: postgres:11.2
     user: "${UID}:${GID}"
+    restart: always
     environment:
       POSTGRES_USER: tester
       POSTGRES_PASSWORD: complicatedpass
@@ -35,6 +36,7 @@ services:
 
   frontend:
     container_name: frontend
+    restart: always
     build:
       context: frontend
       dockerfile: Dockerfile
@@ -42,4 +44,4 @@ services:
       - './frontend:/frontend'
       - '/frontend/node_modules'
     ports:
-      - '8081:8080'
+      - '8080:8080'
