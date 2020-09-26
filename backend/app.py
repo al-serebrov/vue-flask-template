@@ -8,7 +8,7 @@ import requests
 
 app = Flask(__name__)
 # unsafe, all origins have access, should be limited to frontend
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, max_age=3600)
 ria_api = RiaAPI()
 api_key = os.environ.get('API_KEY')
 new_api_url = 'https://developers.ria.com/auto/{method}'
