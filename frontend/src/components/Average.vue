@@ -155,7 +155,7 @@
 <script>
 import axios from 'axios';
 
-const api_url = 'http://localhost:5000'
+const api_url = process.env.VUE_APP_API_ENDPOINT;
 
 export default {
   name: 'Average',
