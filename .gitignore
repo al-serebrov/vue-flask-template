@@ -2,3 +2,5 @@ __pycache__
 *.env
 node_modules
 docker_data
+dist
+build.sh
