@@ -1,10 +1,13 @@
+import datetime
 import os
+from copy import deepcopy
+
+import requests
+from flask import Flask, jsonify, request
 
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
-from flask import Flask, jsonify, request
 from flask_cors import CORS
-from copy import deepcopy
-import requests
+from urllib.parse import urlencode
 
 app = Flask(__name__)
 # unsafe, all origins have access, should be limited to frontend
@@ -84,10 +87,10 @@ def colors():
 def average():
     args = deepcopy(dict(request.args))
     args['api_key'] = api_key
-    start_year = args.get('startYear')
-    end_year = args.get('endYear')
+    start_year = args.get('startYear', '1900')
+    end_year = args.get('endYear', datetime.datetime.now().year)
     years = [start_year, end_year]
-    params = RiaAverageCarPriceParams(
+    ria_parameters = RiaAverageCarPriceParams(
         api_key=api_key,
         main_category=args.get('category'),
         marka_id=args.get('mark'),
@@ -96,8 +99,8 @@ def average():
         body_id=args.get('bodystyle'),
         city_id=args.get('city'),
         yers=years,
-        gear_id=args.get('gears'),
-        fuel_id=args.get('fuels'),
+        gear_id=process_multiple_values(args.get('gears', '')),
+        fuel_id=process_multiple_values(args.get('fuels', '')),
         color_id=args.get('color'),
         # TODO:
         raceInt=None,
@@ -113,14 +116,22 @@ def average():
         confiscated_car=None,
         onRepairParts=None,
     )
-    req_url = new_api_url.format(method='average_price')
-    response = requests.get(url=req_url, params=params._asdict())
+    params = {k: v for (k, v) in ria_parameters._asdict().items() if v}
+    query = urlencode(params, doseq=True)
+    req_url = new_api_url.format(method='average_price?{}'.format(query))
+    response = requests.get(url=req_url)
     if response.status_code == 200:
         return jsonify(response.text)
     else:
         raise Exception(
             'Error making a request to: {}, response: {}, {}'
             .format(req_url, response.status_code, response.text))
+
+
+def process_multiple_values(value):
+    if ',' in value:
+        return value.split(',')
+    return value
 
 
 @app.route('/classifieds/<classified_id>')

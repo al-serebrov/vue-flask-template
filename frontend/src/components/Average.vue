@@ -1,93 +1,117 @@
 <template>
-  <div>
-      <select name="categories" @change="onCategoryChange($event)" v-model="selectedCategory">
-        <option disabled value="" selected hidden>Категория</option>
-        <option
-            v-for="category in categories"
-            :key="category.name"
-            :value="category.value"
-        >{{ category.name }}</option>
-      </select>
-      <select name="bodystyles" v-model="selectedBodystyle">
-        <option disabled value="" selected hidden>Кузов</option>
-        <option
-            v-for="bodystyle in bodystyles"
-            :key="bodystyle.name"
-            :value="bodystyle.value"
-        >{{ bodystyle.name }}</option>
-      </select>
-      <select name="marks" @change="onMarkChange($event)" v-model="selectedMark">
-        <option disabled value="" selected hidden>Марка</option>
-        <option
-            v-for="mark in marks"
-            :key="mark.name"
-            :value="mark.value"
-        >{{ mark.name }}</option>
-      </select>
-      <select name="models" v-model="selectedModel">
-        <option disabled value="" selected hidden>Модель</option>
-        <option
-            v-for="model in models"
-            :key="model.name"
-            :value="model.value"
-        >{{ model.name }}</option>
-      </select>
-      <select name="gearboxes" v-model="selectedGearbox">
-        <option disabled value="" selected hidden>Коробка передач</option>
-        <option
-            v-for="gearbox in gearboxes"
-            :key="gearbox.name"
-            :value="gearbox.value"
-        >{{ gearbox.name }}</option>
-      </select>
-      <select name="fuels" v-model="selectedFuel">
-        <option disabled value="" selected hidden>Топливо</option>
-        <option
-            v-for="fuel in fuels"
-            :key="fuel.name"
-            :value="fuel.value"
-        >{{ fuel.name }}</option>
-      </select>
-      <select name="colors" v-model="selectedColor">
-        <option disabled value="" selected hidden>Цвет</option>
-        <option
-            v-for="color in colors"
-            :key="color.name"
-            :value="color.value"
-        >{{ color.name }}</option>
-      </select>
-      <select name="yearStart" v-model="selectedStartYear">
-        <option disabled value="" selected hidden>Начальный год</option>
-        <option
-            v-for="year in years"
-            :key="year"
-            :value="year"
-        >{{ year }}</option>
-      </select>
-      <select name="yearEnd" v-model="selectedEndYear">
-        <option disabled value="" selected hidden>Конечный год</option>
-        <option
-            v-for="year in years"
-            :key="year"
-            :value="year"
-        >{{ year }}</option>
-      </select>
-      <select name="states" @change="onStateChange($event)" v-model="selectedState">
-        <option disabled value="" selected hidden>Область</option>
-        <option
-            v-for="state in states"
-            :key="state.name"
-            :value="state.value"
-        >{{ state.name }}</option>
-      </select>
-      <select name="cities" v-model="selectedCity">
-        <option disabled value="" selected hidden>Город</option>
-        <option
-            v-for="city in cities"
-            :key="city.name"
-            :value="city.value"
-        >{{ city.name }}</option>
-      </select>
+  <div max-width="800px">
+    <div class="flex-parent">
+      <label class="flex-child">Категория</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="categories"
+        v-model="selectedCategory"
+        @input="onCategoryChange"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Кузов</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="bodystyles"
+        v-model="selectedBodystyle"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Марка</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="marks"
+        v-model="selectedMark"
+        @input="onMarkChange"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Модель</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="models"
+        v-model="selectedModel"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Коробка передач</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        multiple
+        :options="gearboxes"
+        v-model="selectedGearbox"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Топливо</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        multiple
+        :options="fuels"
+        v-model="selectedFuel"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Цвет</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="colors"
+        v-model="selectedColor"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Начальный год</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="years"
+        v-model="selectedStartYear"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Конечный год</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="years"
+        v-model="selectedEndYear"
+        :reduce="name => name.value"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Область</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="states"
+        v-model="selectedState"
+        @input="onStateChange"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Город</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="cities"
+        v-model="selectedCity"
+        :reduce="name => name.value"
+      />
+    </div>
       <button v-on:click=calculate>Рассчет средней цены</button>
       <br>
       <div v-if="calculated">
@@ -116,6 +140,18 @@
   </div>
 </template>
 
+<style>
+.inline-block-child {
+  display: inline-block;
+}
+.flex-parent {
+  display: flex;
+}
+.flex-child {
+  flex: 1;
+}
+</style>
+
 <script>
 import axios from 'axios';
 
@@ -143,11 +179,14 @@ export default {
       total: 0,
       arithmeticMean: 0,
       selectedCategory: '',
+      selectedCategoryId: '',
       selectedBodystyle: '',
       selectedState: '',
+      selectedStateId: '',
       selectedGearbox: '',
       selectedModel: '',
       selectedMark: '',
+      selectedMarkId: '',
       selectedCity: '',
       selectedFuel: '',
       selectedColor: '',
@@ -196,8 +235,8 @@ export default {
           })
       },
       onCategoryChange(event) {
-        this.selectedCategory = event.target.value;
-        let url = `${api_url}/categories/${this.selectedCategory}`
+        this.selectedCategoryId = event.value;
+        let url = `${api_url}/categories/${this.selectedCategoryId}`
         axios.get(url)
           .then((res) => {
             this.bodystyles = res.data.bodystyles;
@@ -210,8 +249,8 @@ export default {
           })
       },
       onStateChange(event) {
-        let selectedState = event.target.value;
-        let url = `${api_url}/states/${selectedState}/cities`
+        this.selectedStateId = event.value;
+        let url = `${api_url}/states/${this.selectedStateId}/cities`
         axios.get(url)
           .then((res) => {
               this.cities = res.data;
@@ -221,8 +260,8 @@ export default {
           })
       },
       onMarkChange(event) {
-        let selectedMark = event.target.value
-        let url = `${api_url}/categories/${this.selectedCategory}/marks/${selectedMark}/models`
+        this.selectedMarkId = event.value;
+        let url = `${api_url}/categories/${this.selectedCategoryId}/marks/${this.selectedMarkId}/models`
         axios.get(url)
           .then((res) => {
               this.models = res.data;
@@ -233,15 +272,19 @@ export default {
       },
       calculate() {
         this.limit = 10;
+        this.classifieds = [];
+        this.average = 0;
+        this.total = 0;
+        this.arithmeticMean = 0;
         let url = `${api_url}/average`
         let components = {
-            category: this.selectedCategory,
-            mark: this.selectedMark,
+            category: this.selectedCategoryId,
+            mark: this.selectedMarkId,
             model: this.selectedModel,
             bodystyle: this.selectedBodystyle,
             startYear: this.selectedStartYear,
             endYear: this.selectedEndYear,
-            state: this.selectedState,
+            state: this.selectedStateId,
             city: this.selectedCity,
             fuels: this.selectedFuel,
             color: this.selectedColor,
