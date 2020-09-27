@@ -7,7 +7,7 @@ services:
     restart: always
     container_name: backend
     user: "${UID}:${GID}"
-    command: flask run
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
     volumes:
       - ./backend:/backend
     ports:
