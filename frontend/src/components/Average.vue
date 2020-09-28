@@ -1,7 +1,7 @@
 <template>
   <div max-width="800px">
     <div class="flex-parent">
-      <label class="flex-child">Категория</label>
+      <label class="required flex-child">Категория</label>
       <v-select
         class="flex-child"
         label="name"
@@ -149,6 +149,10 @@
 }
 .flex-child {
   flex: 1;
+}
+.required:after {
+    content:" *";
+    color: red;
 }
 </style>
 
@@ -306,13 +310,13 @@ export default {
           .then((res) => {
               this.average = JSON.parse(res.data);
               this.total = this.average.total;
-              this.arithmeticMean = this.average.arithmeticMean.toFixed(2);
+              this.arithmeticMean = `$${this.average.arithmeticMean.toFixed(2)}`;
               let ids = this.average.classifieds
               let prices = this.average.prices
               let classifieds = []
               for (let i = 0; i < ids.length; i += 1) {
                   let url = `https://auto.ria.com/auto__${ids[i]}.html`
-                  classifieds.push({url: url, price: prices[i].toFixed(2)})
+                  classifieds.push({url: url, price: `$${prices[i].toFixed(2)}`})
               }
               this.classifieds = classifieds;
           })

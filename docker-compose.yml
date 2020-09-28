@@ -17,11 +17,9 @@ services:
     environment:
       FLASK_APP: /backend/app.py
       FLASK_RUN_HOST: 0.0.0.0
-      FLASK_CONFIG: local
       FLASK_ENV: development
       API_KEY: ${API_KEY}
       SQLALCHEMY_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
-      SQLALCHEMY_TEST_DATABASE_URI: 'postgresql://tester:complicatedpass@postgresql:5432/autoria'
 
   postgresql:
     image: postgres:11.2

@@ -8,19 +8,67 @@ from flask import Flask, jsonify, request
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
 from flask_cors import CORS
 from urllib.parse import urlencode
+from models import db, Searches
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from uuid import uuid4
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 # unsafe, all origins have access, should be limited to frontend
 CORS(app, resources={r"/*": {"origins": "*"}}, max_age=3600)
+
 ria_api = RiaAPI()
 api_key = os.environ.get('API_KEY')
 new_api_url = 'https://developers.ria.com/auto/{method}'
 
 
 # a simple page that says hello
-@app.route('/')
+@app.route('/', methods=['GET'])
 def hello():
     return "Hello World!"
+
+
+@app.route('/searches', methods=['GET'])
+def get_searches():
+    results = Searches.query.limit(5)
+    searches = [
+        {
+            'category': {'name': s.category, 'value': s.category_id},
+            'mark': {'name': s.mark, 'value': s.mark_id},
+            'model': {'name': s.model, 'value': s.model_id},
+            'bodystyle': {'name': s.bodystyle, 'value': s.bodystyle_id},
+            'state': {'name': s.state, 'value': s.state_id},
+            'city': {'name': s.city, 'value': s.city_id},
+            'fuels': {'name': s.fuels, 'value': s.fuels_id},
+            'color': {'name': s.color, 'value': s.color_id},
+            'gears': {'name': s.gears, 'value': s.gears_id},
+            'driver_type': {'name': s.driver_type, 'value': s.driver_type_id},
+            'start_year': s.start_year,
+            'end_year': s.end_year,
+            'created_at': s.created_at
+        } for s in results
+    ]
+    return jsonify(searches)
+
+
+@app.route('/searches', methods=['POST'])
+def add_search():
+    data = request.get_json(force=True)
+    try:
+        search = Searches(
+            id=None,
+            **data
+        )
+        db.session.add(search)
+        db.session.commit()
+        return jsonify({'status': 'Success'})
+    except:
+        db.session.rollback()
+        return jsonify({'status': 'Failure'})
 
 
 @app.route('/categories')
