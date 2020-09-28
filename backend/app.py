@@ -9,12 +9,10 @@ from autoria.api import RiaAPI, RiaAverageCarPriceParams
 from flask_cors import CORS
 from urllib.parse import urlencode
 from models import db, Searches
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from uuid import uuid4
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'SQLALCHEMY_DATABASE_URI')
 db.init_app(app)
 with app.app_context():
     db.create_all()
