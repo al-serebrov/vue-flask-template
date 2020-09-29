@@ -35,8 +35,8 @@
               <td>{{ search.end_year.name }}</td>
               <td>{{ search.state.name }}</td>
               <td>{{ search.city.name }}</td>
-              <td><a @click="applySearch(value.id)" href="#">Применить</a></td>
-              <td><a @click="deleteSearch(value.id)" href="#">Удалить</a></td>
+              <td><a @click="applySearch(search.id)" href="#">Применить</a></td>
+              <td><a @click="deleteSearch(search.id)" href="#">Удалить</a></td>
             </tr>
           </tbody>
         </table> 
