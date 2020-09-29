@@ -22,8 +22,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="value in searches" :key="value.id">
-              <td v-for="(key, item) in value" :key="item.id">{{ key.name }}</td>
+            <tr v-for="search in searches" :key="search.id">
+              <td>{{ search.category.name }}</td>
+              <td>{{ search.bodystyle.name }}</td>
+              <td>{{ search.mark.name }}</td>
+              <td>{{ search.model.name }}</td>
+              <td>{{ search.gear.name }}</td>
+              <td>{{ search.fuel.name }}</td>
+              <td>{{ search.color.name }}</td>
+              <td>{{ search.driver_type.name }}</td>
+              <td>{{ search.start_year.name }}</td>
+              <td>{{ search.end_year.name }}</td>
+              <td>{{ search.state.name }}</td>
+              <td>{{ search.city.name }}</td>
               <td><a @click="applySearch(value.id)" href="#">Применить</a></td>
               <td><a @click="deleteSearch(value.id)" href="#">Удалить</a></td>
             </tr>
