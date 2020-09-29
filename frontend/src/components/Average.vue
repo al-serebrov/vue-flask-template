@@ -121,8 +121,9 @@
       <v-select
         class="flex-child"
         label="name"
+        value="value"
         :options="years"
-        v-model="selected.startYear"
+        v-model="selected.start_year"
       />
     </div>
     <div class="flex-parent">
@@ -130,8 +131,9 @@
       <v-select
         class="flex-child"
         label="name"
+        value="value"
         :options="years"
-        v-model="selected.endYear"
+        v-model="selected.end_year"
       />
     </div>
     <div class="flex-parent">
@@ -336,7 +338,6 @@ export default {
                 components[key] = null
             }
         }
-        console.log(components);
         const ret = [];
         for (let d in components) {
             if (components[d] instanceof Array && components[d].length == 0) {
@@ -347,7 +348,6 @@ export default {
             }
         }
         let querystring = ret.join('&');
-        console.log(querystring);
         let average_url = `${url}?${querystring}`
         await axios.get(average_url)
           .then((res) => {
@@ -373,14 +373,12 @@ export default {
       },
       async getSearches() {
           this.$refs.topProgress.start()
-          console.log(this.pending)
           try {
             let searches_url = `${api_url}/searches`
             const { data } = await axios.get(searches_url)
             this.searches = data
             this.error = false
             this.$refs.topProgress.done()
-            console.log(data);
           } catch (e) {
             this.searches = null
             this.error = e
@@ -388,11 +386,9 @@ export default {
           }
     },
       applySearch(searchId) {
-          console.log(searchId);
           for (let i = 0; i < this.searches.length; i += 1) {
             if (this.searches[i].id == searchId) {
                 let selectedSearch = this.searches[i];
-                console.log(selectedSearch)
                 this.selected = selectedSearch;
                 this.calculate();
             }
@@ -424,10 +420,13 @@ export default {
   },
   mounted() {
     this.getGenericInfo()
+  },
+  created () {
     let year = new Date().getFullYear();
     for (let i = year - 90; i <= year; i += 1) {
-       this.years[year - i] = i;  
+       this.years[year - i] = {name: i, value: i};
     }
-  },
+    console.log(this.years)
+  }
 };
 </script>
