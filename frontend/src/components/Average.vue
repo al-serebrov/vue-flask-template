@@ -113,7 +113,7 @@
         class="flex-child"
         label="name"
         :options="driverTypes"
-        v-model="selected.driverType"
+        v-model="selected.driver_type"
       />
     </div>
     <div class="flex-parent">

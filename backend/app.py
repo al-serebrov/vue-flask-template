@@ -163,13 +163,13 @@ def average():
         body_id=args.get('bodystyle'),
         city_id=args.get('city'),
         yers=years,
-        gear_id=process_multiple_values(args.get('gears', '')),
-        fuel_id=process_multiple_values(args.get('fuels', '')),
+        gear_id=args.get('gear', ''),
+        fuel_id=args.get('fuel', ''),
         color_id=args.get('color'),
+        drive_id=args.get('driver_type'),
         # TODO:
         raceInt=None,
         options=None,
-        drive_id=None,
         engineVolume=None,
         seats=None,
         door=None,
@@ -190,12 +190,6 @@ def average():
         raise Exception(
             'Error making a request to: {}, response: {}, {}'
             .format(req_url, response.status_code, response.text))
-
-
-def process_multiple_values(value):
-    if ',' in value:
-        return value.split(',')
-    return value
 
 
 @app.route('/classifieds/<classified_id>')
