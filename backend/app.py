@@ -69,28 +69,6 @@ def add_search():
 
     search = Searches(
         id=None,
-        # category_id=data.get('category', {}).get('value'),
-        # category=data.get('category', {}).get('name'),
-        # mark_id=data.get('mark', {}).get('value'),
-        # mark=data.get('mark', {}).get('name'),
-        # model_id=data.get('model', {}).get('value'),
-        # model=data.get('model', {}).get('name'),
-        # bodystyle_id=data.get('bodystyle', {}).get('value'),
-        # bodystyle=data.get('bodystyle', {}).get('name'),
-        # start_year=data.get('startYear', {}).get('name'),
-        # end_year=data.get('endYear', {}).get('name'),
-        # state_id=data.get('state', {}).get('value'),
-        # state=data.get('state', {}).get('name'),
-        # city_id=data.get('city', {}).get('value'),
-        # city=data.get('city', {}).get('name'),
-        # fuel_id=data.get('fuel', {}).get('value'),
-        # fuel=data.get('fuel', {}).get('name'),
-        # color_id=data.get('color', {}).get('value'),
-        # color=data.get('color', {}).get('name'),
-        # gear_id=data.get('gear', {}).get('value'),
-        # gear=data.get('gear', {}).get('name'),
-        # driver_type_id=data.get('driver_type', {}).get('value'),
-        # driver_type=data.get('driver_type', {}).get('name'),
         created_at=datetime.datetime.utcnow(),
         **data_to_db
     )
