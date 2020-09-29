@@ -8,7 +8,7 @@ from flask import Flask, jsonify, request
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
 from flask_cors import CORS
 from urllib.parse import urlencode
-from .models import db, Searches
+from models import db, Searches
 from sqlalchemy import inspect
 
 app = Flask(__name__)
