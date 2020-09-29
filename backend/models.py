@@ -31,7 +31,10 @@ class Searches(db.Model):
     bodystyle = db.Column(db.String, nullable=True)
 
     start_year = db.Column(db.Integer, nullable=True)
+    start_year_id = db.Column(db.Integer, nullable=True)
+
     end_year = db.Column(db.Integer, nullable=True)
+    end_year_id = db.Column(db.Integer, nullable=True)
 
     state_id = db.Column(db.Integer, nullable=True)
     state = db.Column(db.String, nullable=True)
@@ -39,16 +42,16 @@ class Searches(db.Model):
     city_id = db.Column(db.Integer, nullable=True)
     city = db.Column(db.String, nullable=True)
 
-    fuels_id = db.Column(db.String, nullable=True)
-    fuels = db.Column(db.String, nullable=True)
+    fuel_id = db.Column(db.String, nullable=True)
+    fuel = db.Column(db.String, nullable=True)
 
     color_id = db.Column(db.Integer, nullable=True)
     color = db.Column(db.Integer, nullable=True)
 
-    gears_id = db.Column(db.String, nullable=True)
-    gears = db.Column(db.String, nullable=True)
+    gear_id = db.Column(db.String, nullable=True)
+    gear = db.Column(db.String, nullable=True)
 
     driver_type_id = db.Column(db.Integer, nullable=True)
     driver_type = db.Column(db.String, nullable=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    created_at = db.Column(db.DateTime, nullable=False)

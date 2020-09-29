@@ -8,11 +8,13 @@ from flask import Flask, jsonify, request
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
 from flask_cors import CORS
 from urllib.parse import urlencode
-from models import db, Searches
+from .models import db, Searches
+from sqlalchemy import inspect
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 with app.app_context():
     db.create_all()
@@ -23,6 +25,9 @@ ria_api = RiaAPI()
 api_key = os.environ.get('API_KEY')
 new_api_url = 'https://developers.ria.com/auto/{method}'
 
+inst = inspect(Searches)
+fields = [c_attr.key for c_attr in inst.mapper.column_attrs]
+
 
 # a simple page that says hello
 @app.route('/', methods=['GET'])
@@ -32,40 +37,75 @@ def hello():
 
 @app.route('/searches', methods=['GET'])
 def get_searches():
-    results = Searches.query.limit(5)
-    searches = [
-        {
-            'category': {'name': s.category, 'value': s.category_id},
-            'mark': {'name': s.mark, 'value': s.mark_id},
-            'model': {'name': s.model, 'value': s.model_id},
-            'bodystyle': {'name': s.bodystyle, 'value': s.bodystyle_id},
-            'state': {'name': s.state, 'value': s.state_id},
-            'city': {'name': s.city, 'value': s.city_id},
-            'fuels': {'name': s.fuels, 'value': s.fuels_id},
-            'color': {'name': s.color, 'value': s.color_id},
-            'gears': {'name': s.gears, 'value': s.gears_id},
-            'driver_type': {'name': s.driver_type, 'value': s.driver_type_id},
-            'start_year': s.start_year,
-            'end_year': s.end_year,
-            'created_at': s.created_at
-        } for s in results
-    ]
+    results = Searches.query.order_by(Searches.created_at.desc()).limit(5)
+    searches = []
+    for search in results:
+        item = {
+            'id': search.id,
+            'created_at': search.created_at,
+        }
+        for field in fields:
+            if field in ['id', 'created_at']:
+                continue
+            try:
+                item[field] = {
+                    'name': getattr(search, field),
+                    'value': getattr(search, f'{field}_id')}
+            except AttributeError:
+                continue
+        searches.append(item)
     return jsonify(searches)
 
 
 @app.route('/searches', methods=['POST'])
 def add_search():
     data = request.get_json(force=True)
+    data_to_db = {}
+    for name, value in data.items():
+        if name in ['id', 'created_at']:
+            continue
+        data_to_db[name] = value.get('name')
+        data_to_db[f'{name}_id'] = value.get('value')
+
+    search = Searches(
+        id=None,
+        # category_id=data.get('category', {}).get('value'),
+        # category=data.get('category', {}).get('name'),
+        # mark_id=data.get('mark', {}).get('value'),
+        # mark=data.get('mark', {}).get('name'),
+        # model_id=data.get('model', {}).get('value'),
+        # model=data.get('model', {}).get('name'),
+        # bodystyle_id=data.get('bodystyle', {}).get('value'),
+        # bodystyle=data.get('bodystyle', {}).get('name'),
+        # start_year=data.get('startYear', {}).get('name'),
+        # end_year=data.get('endYear', {}).get('name'),
+        # state_id=data.get('state', {}).get('value'),
+        # state=data.get('state', {}).get('name'),
+        # city_id=data.get('city', {}).get('value'),
+        # city=data.get('city', {}).get('name'),
+        # fuel_id=data.get('fuel', {}).get('value'),
+        # fuel=data.get('fuel', {}).get('name'),
+        # color_id=data.get('color', {}).get('value'),
+        # color=data.get('color', {}).get('name'),
+        # gear_id=data.get('gear', {}).get('value'),
+        # gear=data.get('gear', {}).get('name'),
+        # driver_type_id=data.get('driver_type', {}).get('value'),
+        # driver_type=data.get('driver_type', {}).get('name'),
+        created_at=datetime.datetime.utcnow(),
+        **data_to_db
+    )
+    db.session.add(search)
+    db.session.commit()
+    return jsonify({'status': 'Success'})
+
+
+@app.route('/searches/<search_id>', methods=['DELETE'])
+def delete_search(search_id):
     try:
-        search = Searches(
-            id=None,
-            **data
-        )
-        db.session.add(search)
+        Searches.query.filter_by(id=search_id).delete()
         db.session.commit()
         return jsonify({'status': 'Success'})
-    except:
-        db.session.rollback()
+    except Exception as e:
         return jsonify({'status': 'Failure'})
 
 
@@ -133,8 +173,8 @@ def colors():
 def average():
     args = deepcopy(dict(request.args))
     args['api_key'] = api_key
-    start_year = args.get('startYear', '1900')
-    end_year = args.get('endYear', datetime.datetime.now().year)
+    start_year = args.get('start_year', '1900')
+    end_year = args.get('end_year', datetime.datetime.now().year)
     years = [start_year, end_year]
     ria_parameters = RiaAverageCarPriceParams(
         api_key=api_key,

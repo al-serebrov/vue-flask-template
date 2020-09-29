@@ -1,12 +1,43 @@
 <template>
   <div max-width="800px">
+    <vue-topprogress ref="topProgress"></vue-topprogress>
+    <div>
+        Последние поиски:
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Kaтегория</th>
+              <th scope="col">Кузов</th>
+              <th scope="col">Марка</th>
+              <th scope="col">Модель</th>
+              <th scope="col">Коробка передач</th>
+              <th scope="col">Топливо</th>
+              <th scope="col">Цвет</th>
+              <th scope="col">Привод</th>
+              <th scope="col">Начальный год</th>
+              <th scope="col">Конечный год</th>
+              <th scope="col">Область</th>
+              <th scope="col">Город</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="value in searches" :key="value.id">
+              <td v-for="(key, item) in value" :key="item.id">{{ key.name }}</td>
+              <td><a @click="applySearch(value.id)" href="#">Применить</a></td>
+              <td><a @click="deleteSearch(value.id)" href="#">Удалить</a></td>
+            </tr>
+          </tbody>
+        </table> 
+    </div>
+    Параметры поиска:
     <div class="flex-parent">
       <label class="required flex-child">Категория</label>
       <v-select
         class="flex-child"
         label="name"
         :options="categories"
-        v-model="selectedCategory"
+        v-model="selected.category"
         @input="onCategoryChange"
       />
     </div>
@@ -16,8 +47,7 @@
         class="flex-child"
         label="name"
         :options="bodystyles"
-        v-model="selectedBodystyle"
-        :reduce="name => name.value"
+        v-model="selected.bodystyle"
       />
     </div>
     <div class="flex-parent">
@@ -26,7 +56,7 @@
         class="flex-child"
         label="name"
         :options="marks"
-        v-model="selectedMark"
+        v-model="selected.mark"
         @input="onMarkChange"
       />
     </div>
@@ -36,8 +66,7 @@
         class="flex-child"
         label="name"
         :options="models"
-        v-model="selectedModel"
-        :reduce="name => name.value"
+        v-model="selected.model"
       />
     </div>
     <div class="flex-parent">
@@ -45,10 +74,8 @@
       <v-select
         class="flex-child"
         label="name"
-        multiple
-        :options="gearboxes"
-        v-model="selectedGearbox"
-        :reduce="name => name.value"
+        :options="gears"
+        v-model="selected.gear"
       />
     </div>
     <div class="flex-parent">
@@ -56,10 +83,8 @@
       <v-select
         class="flex-child"
         label="name"
-        multiple
         :options="fuels"
-        v-model="selectedFuel"
-        :reduce="name => name.value"
+        v-model="selected.fuel"
       />
     </div>
     <div class="flex-parent">
@@ -68,8 +93,16 @@
         class="flex-child"
         label="name"
         :options="colors"
-        v-model="selectedColor"
-        :reduce="name => name.value"
+        v-model="selected.color"
+      />
+    </div>
+    <div class="flex-parent">
+      <label class="flex-child">Привод</label>
+      <v-select
+        class="flex-child"
+        label="name"
+        :options="driverTypes"
+        v-model="selected.driverType"
       />
     </div>
     <div class="flex-parent">
@@ -78,8 +111,7 @@
         class="flex-child"
         label="name"
         :options="years"
-        v-model="selectedStartYear"
-        :reduce="name => name.value"
+        v-model="selected.startYear"
       />
     </div>
     <div class="flex-parent">
@@ -88,8 +120,7 @@
         class="flex-child"
         label="name"
         :options="years"
-        v-model="selectedEndYear"
-        :reduce="name => name.value"
+        v-model="selected.endYear"
       />
     </div>
     <div class="flex-parent">
@@ -98,7 +129,7 @@
         class="flex-child"
         label="name"
         :options="states"
-        v-model="selectedState"
+        v-model="selected.state"
         @input="onStateChange"
       />
     </div>
@@ -108,8 +139,7 @@
         class="flex-child"
         label="name"
         :options="cities"
-        v-model="selectedCity"
-        :reduce="name => name.value"
+        v-model="selected.city"
       />
     </div>
       <button v-on:click=calculate>Рассчет средней цены</button>
@@ -157,7 +187,8 @@
 </style>
 
 <script>
-import axios from 'axios';
+import axios from 'axios';                                
+import { vueTopprogress } from 'vue-top-progress'
 
 const api_url = process.env.VUE_APP_API_ENDPOINT;
 
@@ -165,16 +196,17 @@ export default {
   name: 'Average',
   data() {
     return {
+      searches: [],
       categories: [],
       bodystyles: [],
       marks: [],
       models: [],
-      gearboxes: [],
-      driverTypes: [],
+      gears: [],
       states: [],
       cities: [],
       fuels: [],
       colors: [],
+      driverTypes: [],
       years: [],
       average: {},
       classifieds: [],
@@ -182,21 +214,24 @@ export default {
       limit: 10,
       total: 0,
       arithmeticMean: 0,
-      selectedCategory: '',
-      selectedCategoryId: '',
-      selectedBodystyle: '',
-      selectedState: '',
-      selectedStateId: '',
-      selectedGearbox: '',
-      selectedModel: '',
-      selectedMark: '',
-      selectedMarkId: '',
-      selectedCity: '',
-      selectedFuel: '',
-      selectedColor: '',
-      selectedStartYear: '',
-      selectedEndYear: '',
+      selected: {
+          category: {name: null, value: null},
+          bodystyle: {name: null, value: null},
+          state: {name: null, value: null},
+          gear: {name: null,  value: null},
+          model: {name: null, value: null},
+          mark: {name: null, value: null},
+          city: {name: null, value: null},
+          fuel: {name: null, value: null},
+          color: {name: null, value: null},
+          driver_type: {name: null, value: null},
+          start_year: {name: null, value: null},
+          end_year: {name: null, value: null},
+      }
     };
+  },
+  components: {
+    vueTopprogress
   },
   computed: {
     classifiedsLimited() {
@@ -237,24 +272,25 @@ export default {
           .catch((error) => {
             console.log(error);
           })
+          this.getSearches();
       },
-      onCategoryChange(event) {
-        this.selectedCategoryId = event.value;
-        let url = `${api_url}/categories/${this.selectedCategoryId}`
-        axios.get(url)
+      async onCategoryChange() {
+        this.$refs.topProgress.start()
+        let url = `${api_url}/categories/${this.selected.category.value}`
+        await axios.get(url)
           .then((res) => {
             this.bodystyles = res.data.bodystyles;
             this.marks = res.data.marks;
-            this.gearboxes = res.data.gearboxes;
+            this.gears = res.data.gearboxes;
             this.driverTypes = res.data.driverTypes;
           })
           .catch((error) => {
             console.log(error);
           })
+        this.$refs.topProgress.done()
       },
-      onStateChange(event) {
-        this.selectedStateId = event.value;
-        let url = `${api_url}/states/${this.selectedStateId}/cities`
+      onStateChange() {
+        let url = `${api_url}/states/${this.selected.state.value}/cities`
         axios.get(url)
           .then((res) => {
               this.cities = res.data;
@@ -263,9 +299,8 @@ export default {
             console.log(error);
           })
       },
-      onMarkChange(event) {
-        this.selectedMarkId = event.value;
-        let url = `${api_url}/categories/${this.selectedCategoryId}/marks/${this.selectedMarkId}/models`
+      onMarkChange() {
+        let url = `${api_url}/categories/${this.selected.category.value}/marks/${this.selected.mark.value}/models`
         axios.get(url)
           .then((res) => {
               this.models = res.data;
@@ -274,27 +309,23 @@ export default {
             console.log(error);
           })
       },
-      calculate() {
+      async calculate() {
+        this.$refs.topProgress.start()
         this.limit = 10;
         this.classifieds = [];
         this.average = 0;
         this.total = 0;
         this.arithmeticMean = 0;
         let url = `${api_url}/average`
-        let components = {
-            category: this.selectedCategoryId,
-            mark: this.selectedMarkId,
-            model: this.selectedModel,
-            bodystyle: this.selectedBodystyle,
-            startYear: this.selectedStartYear,
-            endYear: this.selectedEndYear,
-            state: this.selectedStateId,
-            city: this.selectedCity,
-            fuels: this.selectedFuel,
-            color: this.selectedColor,
-            gears: this.selectedGearbox,
-            driver_type: this.selectedDriverType,
+        let components = {}
+        for (const [key, data] of Object.entries(this.selected)) {
+            if (data) {
+                components[key] = data.value
+            } else {
+                components[key] = null
+            }
         }
+        console.log(components);
         const ret = [];
         for (let d in components) {
             if (components[d] instanceof Array && components[d].length == 0) {
@@ -305,8 +336,9 @@ export default {
             }
         }
         let querystring = ret.join('&');
+        console.log(querystring);
         let average_url = `${url}?${querystring}`
-        axios.get(average_url)
+        await axios.get(average_url)
           .then((res) => {
               this.average = JSON.parse(res.data);
               this.total = this.average.total;
@@ -324,9 +356,62 @@ export default {
             console.log(error);
           })
           this.calculated = true;
+          await this.saveSearch()
+          await this.getSearches();
+          this.$refs.topProgress.done()
       },
+      async getSearches() {
+          this.$refs.topProgress.start()
+          console.log(this.pending)
+          try {
+            let searches_url = `${api_url}/searches`
+            const { data } = await axios.get(searches_url)
+            this.searches = data
+            this.error = false
+            this.$refs.topProgress.done()
+            console.log(data);
+          } catch (e) {
+            this.searches = null
+            this.error = e
+            this.$refs.topProgress.fail()
+          }
+    },
+      applySearch(searchId) {
+          console.log(searchId);
+          for (let i = 0; i < this.searches.length; i += 1) {
+            if (this.searches[i].id == searchId) {
+                let selectedSearch = this.searches[i];
+                console.log(selectedSearch)
+                this.selected = selectedSearch;
+                this.calculate();
+            }
+          }
+      },
+      async deleteSearch(searchId) {
+          const url = `${api_url}/searches/${searchId}`
+          this.$refs.topProgress.start()
+          await axios.delete(url)
+            .then(function(response){
+                console.log(response.data);
+                this.$refs.topProgress.done()
+            })
+            .catch(function(error) {
+                console.log(error);
+            })
+          await this.getSearches()
+      },
+      saveSearch() {
+          let save_url = `${api_url}/searches`;
+          axios.post(save_url, this.selected)
+            .then(function (response) {
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+      }
   },
-  created() {
+  mounted() {
     this.getGenericInfo()
     let year = new Date().getFullYear();
     for (let i = year - 90; i <= year; i += 1) {
