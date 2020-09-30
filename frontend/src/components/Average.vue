@@ -178,7 +178,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in classifiedsLimited" :key="index">
+            <tr v-for="item in classifiedsLimited" :key="item.id">
               <td><a :href="item.url" target="_blank">{{ item.url }}</a></td>
               <template v-if="showMore">
                 <td>{{ item.model }}</td>
@@ -337,6 +337,7 @@ export default {
         this.$refs.topProgress.start()
         this.limit = 10;
         this.classifieds = [];
+        this.showMore = false;
         this.average = 0;
         this.total = 0;
         this.arithmeticMean = 0;
@@ -467,6 +468,7 @@ export default {
                     race: `${data.autoData.race}`,
                  }
                console.log(this.classifiedsLimited[i])
+               this.$forceUpdate();
                })
                .catch(error => {
                  console.log(error);
@@ -474,7 +476,6 @@ export default {
                })
           }
           this.$refs.topProgress.done();
-          this.$forceUpdate();
       },
   },
   mounted() {
