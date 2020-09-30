@@ -7,7 +7,7 @@ services:
     restart: always
     container_name: backend
     user: "${UID}:${GID}"
-    command: flask run
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
     volumes:
       - ./backend:/backend
     ports:
@@ -33,16 +33,14 @@ services:
     volumes:
       - ./docker_data/postgresql:/var/lib/postgresql/data
 
-  frontend:
-    container_name: frontend
-    restart: always
-    build:
-      context: frontend
-      dockerfile: Dockerfile
-    environment:
-        VUE_APP_API_ENDPOINT: localhost:5000
-    volumes:
-      - './frontend:/frontend'
-      - '/frontend/node_modules'
-    ports:
-      - '8080:8080'
+  nginx:
+      container_name: nginx
+      restart: always
+      build:
+          context: nginx
+          dockerfile: Dockerfile
+      volumes:
+          - './nginx/nginx.conf:/etc/nginx/nginx.conf'
+          - './frontend/dist:/var/www/dist'
+      ports:
+          - "80:80"

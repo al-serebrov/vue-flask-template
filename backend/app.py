@@ -8,8 +8,12 @@ from flask import Flask, jsonify, request
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
 from flask_cors import CORS
 from urllib.parse import urlencode
-from models import db, Searches
 from sqlalchemy import inspect
+
+try:
+    from .models import db, Searches
+except ImportError:
+    from models import db, Searches
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
