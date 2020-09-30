@@ -40,7 +40,7 @@ services:
       context: frontend
       dockerfile: Dockerfile
     environment:
-        VUE_APP_API_ENDPOINT: localhost:5000
+        VUE_APP_API_ENDPOINT: localhost
     volumes:
       - './frontend:/frontend'
       - '/frontend/node_modules'

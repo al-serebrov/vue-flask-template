@@ -216,7 +216,7 @@
 import axios from 'axios';                                
 import { vueTopprogress } from 'vue-top-progress'
 
-const api_url = `http://${process.env.VUE_APP_API_ENDPOINT}`;
+const api_url = `http://${process.env.VUE_APP_API_ENDPOINT}:5000`;
 
 export default {
   name: 'Average',
