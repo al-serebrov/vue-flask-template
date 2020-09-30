@@ -1,14 +1,15 @@
 import datetime
 import os
+from collections import namedtuple
 from copy import deepcopy
+from urllib.parse import urlencode
 
 import requests
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+from sqlalchemy import inspect
 
 from autoria.api import RiaAPI, RiaAverageCarPriceParams
-from flask_cors import CORS
-from urllib.parse import urlencode
-from sqlalchemy import inspect
 
 try:
     from .models import db, Searches
@@ -31,12 +32,6 @@ new_api_url = 'https://developers.ria.com/auto/{method}'
 
 inst = inspect(Searches)
 fields = [c_attr.key for c_attr in inst.mapper.column_attrs]
-
-
-# a simple page that says hello
-@app.route('/', methods=['GET'])
-def hello():
-    return "Hello World!"
 
 
 @app.route('/searches', methods=['GET'])

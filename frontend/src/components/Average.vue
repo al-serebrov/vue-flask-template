@@ -160,25 +160,38 @@
       <div v-if="calculated">
         <p>Всего объявлений: {{ total }}</p>
         <p>Средняя цена: {{ arithmeticMean }}</p>
+        <input type="checkbox" v-model="showMore" @change="getMoreInfo"/> Больше информации
         <table class="table">
           <thead>
             <tr>
               <th scope="col">
                 Ссылка на <a href="https://auto.ria.com">auto.ria.com</a>
               </th>
+              <template v-if="showMore">
+                <th scope="col">Модель</th>
+                <th scope="col">Город</th>
+                <th scope="col">Год выпуска</th>
+                <th scope="col">Пробег</th>
+              </template>
               <th scope="col">Цена</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in classifiedsLimited" :key="item.url">
+            <tr v-for="(item, index) in classifiedsLimited" :key="index">
               <td><a :href="item.url" target="_blank">{{ item.url }}</a></td>
+              <template v-if="showMore">
+                <td>{{ item.model }}</td>
+                <td>{{ item.city }}</td>
+                <td>{{ item.year }}</td>
+                <td>{{ item.race }}</td>
+              </template>
               <td>{{ item.price }}</td>
             </tr>
           </tbody>
         </table> 
-        <button @click="limit -= 10">Показать меньше</button>
-        <button @click="limit += 10">Показать больше</button>
+        <button @click="prevPage">Показать меньше</button>
+        <button @click="nextPage">Показать больше</button>
       </div>
   </div>
 </template>
@@ -223,8 +236,11 @@ export default {
       years: [],
       average: {},
       classifieds: [],
+      classifiedsLimited: [],
+      showMore: false,
       calculated: false,
       limit: 10,
+      start: 10,
       total: 0,
       arithmeticMean: 0,
       selected: {
@@ -245,11 +261,6 @@ export default {
   },
   components: {
     vueTopprogress
-  },
-  computed: {
-    classifiedsLimited() {
-      return this.limit? this.classifieds.slice(0, this.limit) : this.classifieds;
-    },
   },
   methods: {
       getGenericInfo() {
@@ -358,8 +369,9 @@ export default {
               let prices = this.average.prices
               let classifieds = []
               for (let i = 0; i < ids.length; i += 1) {
-                  let url = `https://auto.ria.com/auto__${ids[i]}.html`
-                  classifieds.push({url: url, price: `$${prices[i].toFixed(2)}`})
+                  let id = ids[i];
+                  let url = `https://auto.ria.com/auto__${id}.html`
+                  classifieds.push({id: id, url: url, price: `$${prices[i].toFixed(2)}`})
               }
               this.classifieds = classifieds;
           })
@@ -367,9 +379,25 @@ export default {
             console.log(error);
           })
           this.calculated = true;
+          this.classifiedsLimited = this.classifieds.slice(0, this.limit);
           await this.saveSearch()
           await this.getSearches();
           this.$refs.topProgress.done()
+      },
+      nextPage () {
+        this.limit += 10;
+        let newLimited = this.classifiedsLimited.concat(
+          this.classifieds.slice(this.start, this.limit));
+        this.classifiedsLimited = newLimited;
+        if(this.showMore) this.getMoreInfo();
+        this.start += 10;
+      },
+      prevPage() {
+        if (this.limit <= 10) {
+          return;
+        }
+        this.limit -= 10;
+        this.classifiedsLimited = this.classifiedsLimited.slice(0, this.limit);
       },
       async getSearches() {
           this.$refs.topProgress.start()
@@ -416,7 +444,38 @@ export default {
             .catch(function (error) {
                 console.log(error);
             })
-      }
+      },
+      async getMoreInfo () {
+          this.$refs.topProgress.start()
+          for (let i = 0; i < this.classifiedsLimited.length; i += 1) {
+             if (this.classifiedsLimited[i].loaded) {
+                continue;
+             }
+             let id = this.classifiedsLimited[i].id;
+             let url = `${api_url}/classifieds/${id}`
+             await axios.get(url)
+               .then(response => {
+                 let data = JSON.parse(response.data);
+                 this.classifiedsLimited[i] = {
+                    id: id,
+                    url: this.classifiedsLimited[i].url,
+                    price: this.classifiedsLimited[i].price,
+                    loaded: true,
+                    model: `${data.markName} ${data.modelName}`,
+                    city: `${data.locationCityName}`,
+                    year: `${data.autoData.year}`,
+                    race: `${data.autoData.race}`,
+                 }
+               console.log(this.classifiedsLimited[i])
+               })
+               .catch(error => {
+                 console.log(error);
+                 this.$refs.topProgress.fail();
+               })
+          }
+          this.$refs.topProgress.done();
+          this.$forceUpdate();
+      },
   },
   mounted() {
     this.getGenericInfo()
@@ -426,7 +485,6 @@ export default {
     for (let i = year - 90; i <= year; i += 1) {
        this.years[year - i] = {name: i, value: i};
     }
-    console.log(this.years)
   }
 };
 </script>
