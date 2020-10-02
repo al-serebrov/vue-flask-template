@@ -9,17 +9,17 @@ The application is built using the following technologies:
 - PostgreSQL
 - Nginx: for serving the frontend
 
-Everything is wrapped up into the Docker, using the docker-compose and have two separate configurations - for local development and for production.
+Everything is wrapped up into the Docker, using the docker-compose and has two separate configurations - for local development and for production.
 
-Project is built the way it could be deployed on the Virtual Machine from the cloud provider of your preference (AWS, Google Cloud, Azure, Heroku etc). I used AWS EC2 instance to deploy the project, that's why my configurations mentions credentials specific for it.
+Project is built the way it could be deployed on the Virtual Machine from the cloud provider of your preference (AWS, Google Cloud, Azure, Heroku etc). I used AWS EC2 instance to deploy the project, that's why my configurations mention credentials specific for it.
 
 ## Installation
 
-To install everything on your local machine you'd need to have Docker and docker-compose installed locally. If you need to tweak project configuration, e.g. Python or JS dependencies - you need to have Python and/or node.js installed locally.
+To install everything on your local machine you'd need to have Docker and docker-compose installed locally. If you need to tweak the project configuration, e.g. Python or JS dependencies - you need to have Python and/or node.js installed locally.
 
 ## Configuration
 
-The project is configured via environmental variables, for the convenience they could be placed into the `.env` file (e.g. `config.env`):
+The project is configured via environment variables, for convenience they could be placed into the `.env` file (e.g. `config.env`):
 
 ```
 export API_KEY="your_developers_auto_ria_api_key"
@@ -28,11 +28,11 @@ export EC2_INSTANCE_PUBLIC_DOMAIN="ec2_public_domain_name"
 export EC2_USER="ec2-user"
 ```
 
-To get an auto.ria.com API key, you need to visit their developers website: https://developers.ria.com/ register there and get the key. This API key is used internally by the backend and not exposed to the frontend.
+To get the auto.ria.com API key, you need to visit their developers website: https://developers.ria.com/, register there and get the key. This API key is used internally by the backend and not exposed to the frontend.
 
 ## Development
 
-The first thing is to configure the project by setting the environmental variables, if you have them in the `config.env` file the following command sequence will work:
+The first thing to do is to configure the project by setting the environment variables, if you have them in the `config.env` file the following command sequence will work:
 
 ```
 source config.env
@@ -43,7 +43,7 @@ Backend API is running on http://localhost:5000
 Frontend is running on http://localhost:8080
 Database is running on http://localhost:5432
 
-Also you need to create a database in PostgreSQL, the project is configured to work with /autoria table:
+Also you need to create a database in PostgreSQL, the project is configured to work with /autoria database:
 ```
 ➜ psql -h localhost -p 5432 -U tester
 Password for user tester:
@@ -57,7 +57,7 @@ tester=# create database autoria;
 
 ## Deploy
 
-The easiest way to deploy this project to a Virtual Machine is to install there the following tools:
+The easiest way to deploy this project to a Virtual Machine is to install the following tools inside the VM:
 - `git`
 - `docker`
 - `docker-compose`
