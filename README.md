@@ -1,4 +1,4 @@
-# Fullstack web application using auto.ria.com API
+# Fullstack CRUD application template
 
 ## Description
 
@@ -13,6 +13,8 @@ Everything is wrapped up into the Docker, using the docker-compose and has two s
 
 Project is built the way it could be deployed on the Virtual Machine from the cloud provider of your preference (AWS, Google Cloud, Azure, Heroku etc). I used AWS EC2 instance to deploy the project, that's why my configurations mention credentials specific for it.
 
+The application itself is something like micropost platform - it allows you to add messages, delete and edit them. Messages are kept in the database.
+
 ## Installation
 
 To install everything on your local machine you'd need to have Docker and docker-compose installed locally. If you need to tweak the project configuration, e.g. Python or JS dependencies - you need to have Python and/or node.js installed locally.
@@ -22,13 +24,10 @@ To install everything on your local machine you'd need to have Docker and docker
 The project is configured via environment variables, for convenience they could be placed into the `.env` file (e.g. `config.env`):
 
 ```
-export API_KEY="your_developers_auto_ria_api_key"
 export EC2_INSTANCE_PUBLIC_DOMAIN="ec2_public_domain_name"
 # default value for EC2_USER:
 export EC2_USER="ec2-user"
 ```
-
-To get the auto.ria.com API key, you need to visit their developers website: https://developers.ria.com/, register there and get the key. This API key is used internally by the backend and not exposed to the frontend.
 
 ## Development
 
@@ -43,7 +42,7 @@ Backend API is running on http://localhost:5000
 Frontend is running on http://localhost:8080
 Database is running on http://localhost:5432
 
-Also you need to create a database in PostgreSQL, the project is configured to work with /autoria database:
+Also you need to create a database in PostgreSQL, the project is configured to work with /messages database:
 ```
 ➜ psql -h localhost -p 5432 -U tester
 Password for user tester:
@@ -52,7 +51,7 @@ WARNING: psql major version 10, server major version 11.
          Some psql features might not work.
 Type "help" for help.
 
-tester=# create database autoria;
+tester=# create database messages;
 ```
 
 ## Deploy
@@ -64,7 +63,7 @@ The easiest way to deploy this project to a Virtual Machine is to install the fo
 
 Pull the code to the instance:
 ```
-git clone https://github.com/al-serebrov/app-python-auto-ria
+git clone https://github.com/al-serebrov/vue-flask-template
 ```
 
 Build and push the built frontend to the server:
