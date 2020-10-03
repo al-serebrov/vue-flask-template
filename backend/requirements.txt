@@ -34,4 +34,3 @@ urllib3==1.25.10
 wcwidth==0.2.5
 Werkzeug==1.0.1
 wmctrl==0.3
-git+https://github.com/al-serebrov/python-auto-ria.git
