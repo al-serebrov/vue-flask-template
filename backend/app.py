@@ -32,8 +32,9 @@ def get_messages():
         'id': m.id,
         'message': m.msg,
         'created_at': m.created_at,
-        'last_modified_at': m.last_modified_at
-    } for m in Messages.query.all()]
+        'last_modified_at': m.last_modified_at,
+        'edit': False,
+    } for m in Messages.query.order_by(Messages.created_at).all()]
     return jsonify(messages)
 
 
@@ -56,7 +57,7 @@ def delete_message(message_id):
         return jsonify({'status': 'Failure'})
 
 
-@app.route('/messages/<message_id>', methods=['UPDATE'])
+@app.route('/messages/<message_id>', methods=['POST'])
 def update_message(message_id):
     try:
         message = Messages.query.filter_by(id=message_id).first()

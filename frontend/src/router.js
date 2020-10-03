@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Average from './components/Average.vue';
+import Messages from './components/Messages.vue';
 
 Vue.use(Router);
 
@@ -10,8 +10,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Average',
-      component: Average,
+      name: 'Messages',
+      component: Messages,
     },
   ],
 });
